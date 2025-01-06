@@ -67,6 +67,15 @@ async def subscription(sub: Subscription):
     try:
         conn = connect_to_mysql()
         cursor = conn.cursor()
+
+        # Check if the subscription already exists
+        cursor.execute(
+            "SELECT * FROM Subscriptions WHERE order_id = %s AND platform_id = %s AND (email = %s OR discord_id = %s)",
+            (order_id, platform_id, email, discord_id),
+        )
+        if cursor.fetchone():
+            raise HTTPException(status_code=409, detail="Subscription already exists")
+
         cursor.execute(
             """
         INSERT INTO Subscriptions (order_id, email, discord_id, platform_id)
@@ -76,7 +85,7 @@ async def subscription(sub: Subscription):
         )
         conn.commit()
 
-        return {"message": "Subscription created"}
+        return {"message": "success"}
     except Error as e:
         if conn:
             conn.rollback()
@@ -110,11 +119,10 @@ async def unsubscription(sub: Subscription):
         )
         conn.commit()
 
-        # Delete return conut
         if cursor.rowcount == 0:
             raise HTTPException(status_code=404, detail="Subscription not found")
 
-        return {"message": f"Subscription {id.order_id} deleted"}
+        return {"message": "success"}
     except Error as e:
         raise HTTPException(
             status_code=500, detail=f"Failed to delete subscription: {str(e)}"
@@ -137,7 +145,6 @@ def connect_to_mysql():
             database=DATABASE_NAME,
         )
         return conn
-
     except Error as e:
         raise HTTPException(
             status_code=500, detail=f"Database connection failed: {str(e)}"
