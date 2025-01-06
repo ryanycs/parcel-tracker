@@ -3,6 +3,7 @@ from typing import Optional
 
 import uvicorn
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from mysql.connector import Error, connect
 from parcel_tw import Platform, track
 from pydantic import BaseModel
@@ -15,6 +16,13 @@ MYSQL_DATABASE = os.getenv("MYSQL_DATABASE")
 PLATFORM_TO_ID = {"seven_eleven": 1, "family_mart": 2, "ok_mart": 3, "shopee": 4}
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["GET", "POST", "DELETE"],
+    allow_headers=["*"],
+)
 
 
 class Subscription(BaseModel):
