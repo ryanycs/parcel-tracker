@@ -5,7 +5,9 @@
 
 台灣有非常多的物流平台，而蝦皮等電商平台在商品送到後並不會立即通知我們去取貨，有時甚至會延遲半天之久。所以我們設計了一個 Discord Bot，透過Discord 指令來查詢不同物流的包裹進度，而且還不用輸入那些麻煩的驗證碼。同時我們還設計一個訂單查詢平台，結合到包裹追蹤的 discord 機器人，讓兩邊都能同步使用服務。
 
-(圖片)
+<p align="center">
+    <img src="img/architecture.png" width="100">
+</p>
 
 - 查詢不同物流公司的包裹進度，例如 7-11、全家、蝦皮、FamilyMart
 - 架設一個包裹追蹤的 discord 機器人和訂單查詢平台
@@ -125,6 +127,11 @@ sudo apt install docker-compose
 
 # 建立 docker container
 docker-compose up
+
+# run on domain name/your server's ip:8080
+http://<server's ip>:8080
+http://<domain name>
+
 ```
 - 所有服務上線，可以看到 discord bot 也有上線
     
@@ -145,27 +152,48 @@ docker-compose up
 
 - Discord bot
 	- `/track [物流平台] [訂單編號]`: 查詢包裹進度
-		![image](https://hackmd.io/_uploads/r1tRh9crJg.png)
-		![image](https://hackmd.io/_uploads/BkCgpcqr1g.png)
-
-	- `/subscribe [物流平台] [訂單編號]`: 訂閱包裹進度，如果包裹狀態有更新會傳送訊息通知使用者 ![image](https://hackmd.io/_uploads/S1behq9B1e.png)
-
+    <p align="center">
+        <img src="img/track01.png" width="100">
+        <img src="img/track02.png" width="100">
+    </p>
+	- `/subscribe [物流平台] [訂單編號]`: 訂閱包裹進度，如果包裹狀態有更新會傳送訊息通知使用者
+    <p align="center">
+        <img src="img/track03.png" width="100">
+    </p>
 	- `/unsubscribe [物流平台] [訂單編號]`: 取消訂閱過已經訂閱的包裹進度
 
-
-
 - 訂單查詢平台:
+<p align="center">
+    <img src="img/track04.png" width="100">
+</p>
     - 查詢包裹： 使用者選擇物流平台並輸入訂單 ID，然後點擊「查詢包裹」按鈕。若查詢成功，包裹狀態和時間將顯示在頁面上。
         - GET :`/api/track/{platform}/{orderId}`
-        - (圖片)
+         <p align="center">
+             <img src="img/track05.png" width="100">
+         </p>
             
     - 訂閱包裹更新：在查詢包裹後，使用者可以選擇訂閱包裹更新通知。點擊「訂閱包裹更新」按鈕，填寫電子郵件和 Discord 帳號後，點擊「提交訂閱」以完成訂閱。
         - POST : `/api/subscriptions`
-        - (圖片)
-    
+       
+         <p align="center">
+             <img src="img/track06.png" width="100">
+             <img src="img/track07.png" width="100">
+         </p>
+      
+        - 若已訂閱會顯示錯誤
+         <p align="center">
+             <img src="img/track08.png" width="100">
+         </p>
     - 取消訂閱包裹更新：若使用者希望停止接收包裹更新，可以選擇取消訂閱。點擊「取消訂閱包裹更新」按鈕，填寫電子郵件和 Discord 帳號後，點擊「提交取消訂閱」。
         - DELETE : `/api/subscriptions`
-        - (圖片)
+         <p align="center">
+             <img src="img/track09.png" width="100">
+             <img src="img/track10.png" width="100">
+         </p>
+        - 如果查完資料庫找不到discord id，發現還未訂閱會顯示錯誤訊息
+         <p align="center">
+             <img src="img/track11.png" width="100">
+         </p>
             
 ## Future work
 - mail 功能將於 2.0 版上線 
