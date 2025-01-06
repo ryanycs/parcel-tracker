@@ -44,4 +44,4 @@ def is_valid_payload(data: dict) -> bool:
     return True
 
 def run_webhook_server():
-    uvicorn.run(webhook, port=5000)
+    uvicorn.run(webhook, host="0.0.0.0", port=3000)

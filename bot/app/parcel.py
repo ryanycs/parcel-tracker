@@ -1,3 +1,5 @@
+import os
+
 import aiohttp
 from discord import File, app_commands
 from discord.ext import commands
@@ -5,8 +7,9 @@ from discord.ext import commands
 from .config import PLATFORM_CHOICES, PLATFORM_TO_ENUM
 from .utils import create_embed, get_file_path
 
-TRACKING_URL = "http://localhost:8000/api/track"
-SUBSCRIPTION_URL = "http://localhost:8000/api/subscriptions"
+BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
+TRACKING_URL = f"{BACKEND_URL}/api/track"
+SUBSCRIPTION_URL = f"{BACKEND_URL}/api/subscriptions"
 
 
 class Parcel(commands.Cog):
@@ -129,4 +132,5 @@ class Parcel(commands.Cog):
             elif response.status == 404:
                 await ctx.send("找不到訂閱的包裹！")
             else:
+                await ctx.send("取消訂閱失敗，請稍後再試！")
                 await ctx.send("取消訂閱失敗，請稍後再試！")
