@@ -49,7 +49,7 @@ class Parcel(commands.Cog):
         url = f"{TRACKING_URL}/{platform}/{order_id}"
         async with aiohttp.request("GET", url) as response:
             if response.status != 200:
-                await ctx.send("發生錯誤，請稍後再試")
+                await ctx.send("找不到這個包裹！")
                 return
 
             # Send the parcel status to the user

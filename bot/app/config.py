@@ -1,14 +1,15 @@
 from enum import Enum
 
-from discord.ext.commands import Choice
+from discord.app_commands import Choice
 
 
 class Platform(Enum):
     SEVEN_ELEVEN = "seven_eleven"
-    FAMILY_MART  = "family_mart"
-    OK_MART  = "ok_mart"
+    FAMILY_MART = "family_mart"
+    OK_MART = "ok_mart"
     SHOPEE = "shopee"
     LSA = "lsa"
+
 
 PLATFORM_TO_ENUM = {
     "小七": Platform.SEVEN_ELEVEN,
