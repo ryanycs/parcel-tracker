@@ -1,4 +1,4 @@
-USE shopping;
+USE parcel_tracker_db;
 
 CREATE TABLE IF NOT EXISTS Parcels (
         id INT AUTO_INCREMENT PRIMARY KEY,
