@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS Parcels (
         order_id VARCHAR(255) NOT NULL,
         platform_id INT NOT NULL,
         status VARCHAR(255) NOT NULL,
-        update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         UNIQUE KEY (order_id)
 );
 
