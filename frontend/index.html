@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>查詢與訂閱頁面</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 32px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .container {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 100%;
+            max-width: 500px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin: 15px 0;
+        }
+
+        label {
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        input[type="text"],
+        input[type="email"] {
+            width: 80%;
+            padding: 8px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-top: 5px;
+        }
+
+        button {
+            padding: 12px 24px;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            transition: background-color 0.3s ease;
+            margin: 10px 0;
+        }
+
+        .track-button {
+            background-color: #007bff;
+        }
+
+        .track-button:hover {
+            background-color: #0056b3;
+        }
+
+        .subscribe-button {
+            background-color: #28a745;
+        }
+
+        .subscribe-button:hover {
+            background-color: #218838;
+        }
+
+        .cancel-button {
+            background-color: #dc3545;
+        }
+
+        .cancel-button:hover {
+            background-color: #c82333;
+        }
+
+        #packageInfo {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #e9f7fd;
+            border-radius: 5px;
+            border: 1px solid #b0e0f8;
+            display: none;
+            text-align: left;
+        }
+
+        /* 取消訂閱模態框 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            width: 400px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-content input {
+            width: 80%;
+            padding: 8px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+
+        .modal-content button {
+            padding: 12px 24px;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 48%;
+            margin: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .modal-content button:hover {
+            background-color: #218838;
+        }
+
+        .cancel-btn {
+            background-color: #dc3545;
+        }
+
+        .cancel-btn:hover {
+            background-color: #c82333;
+        }
+
+        .platform-select {
+            font-size: 16px;
+            color: #333;
+            padding: 12px;
+            background-color: #f8f9fa;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .platform-select option {
+            padding: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+                margin: 10px;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1>我就比你快拿包裹啦 owo ！！</h1>
+
+    <div class="container">
+        <div class="form-group">
+            <label for="platform">選擇平台：</label>
+            <select id="platform" class="platform-select">
+                <option value="family_mart">Family Mart</option>
+                <option value="okmart">OK Mart</option>
+                <option value="seven_eleven">7-Eleven</option>
+                <option value="shopee">Shopee</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="orderId">訂單 ID：</label>
+            <input type="text" id="orderId" placeholder="輸入訂單 ID" />
+        </div>
+
+        <button class="track-button" onclick="trackPackage()">查詢包裹</button>
+
+        <div id="packageInfo">
+            <h3>包裹送達資訊：</h3>
+            <p id="status"></p>
+            <p id="time"></p>
+        </div>
+
+        <hr />
+
+        <!-- 订阅按钮 -->
+        <button class="subscribe-button" onclick="openSubscriptionModal(true)">訂閱包裹更新</button>
+        <!-- 非订阅按钮 -->
+        <button class="cancel-button" onclick="openCancelModal()">取消訂閱包裹更新</button>
+    </div>
+
+    <!-- 訂閱包裹更新 -->
+    <div id="subscriptionModal" class="modal">
+        <div class="modal-content">
+            <h2>訂閱包裹更新</h2>
+            <p>平台: <span id="modalPlatform"></span></p>
+            <p>訂單 ID: <span id="modalOrderId"></span></p>
+
+            <input type="email" id="email" placeholder="輸入您的 Email(可選)" />
+            <input type="text" id="discord" placeholder="輸入您的 Discord 帳號 " />
+
+            <button onclick="submitSubscription()">提交訂閱</button>
+            <button class="cancel-btn" onclick="closeModal()">取消</button>
+        </div>
+    </div>
+
+    <!-- 取消訂閱包裹更新 -->
+    <div id="cancelModal" class="modal">
+        <div class="modal-content">
+            <h2>取消訂閱包裹更新</h2>
+            <p>平台: <span id="cancelModalPlatform"></span></p>
+            <p>訂單 ID: <span id="cancelModalOrderId"></span></p>
+
+            <input type="email" id="cancelEmail" placeholder="輸入您的 Email(可選)" />
+            <input type="text" id="cancelDiscord" placeholder="輸入您的 Discord 帳號 " />
+
+            <button onclick="submitCancelSubscription()">提交取消訂閱</button>
+            <button class="cancel-btn" onclick="closeCancelModal()">取消</button>
+        </div>
+    </div>
+
+    <script>
+        // 查詢包裹
+        async function trackPackage() {
+            const platform = document.getElementById('platform').value;
+            const orderId = document.getElementById('orderId').value;
+
+            if (!platform || !orderId) {
+                alert('請輸入平台和訂單 ID！');
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://backend:8000/api/track/${platform}/${orderId}`);
+                const data = await response.json();
+
+                if (response.ok) {
+                    document.getElementById('status').textContent = `狀態: ${data.status}`;
+                    document.getElementById('time').textContent = `時間: ${data.time}`;
+                    document.getElementById('packageInfo').style.display = 'block';
+                } else {
+                    alert('未找到包裹');
+                    document.getElementById('packageInfo').style.display = 'none';
+                }
+            } catch (error) {
+                console.error('查詢包裹失敗:', error);
+                alert('查詢時發生錯誤，請稍後重試！');
+            }
+        }
+
+        // 打開訂閱模態框
+        function openSubscriptionModal(isSubscribe) {
+            const platform = document.getElementById('platform').value;
+            const orderId = document.getElementById('orderId').value;
+
+            if (!platform || !orderId) {
+                alert('請先查詢訂單！');
+                return;
+            }
+
+            document.getElementById('modalPlatform').textContent = platform;
+            document.getElementById('modalOrderId').textContent = orderId;
+
+            document.getElementById('subscriptionModal').style.display = 'flex';
+        }
+
+        // 提交訂閱
+        async function submitSubscription() {
+            const email = document.getElementById('email').value;
+            const discord = document.getElementById('discord').value;
+            const platform = document.getElementById('modalPlatform').textContent;
+            const orderId = document.getElementById('modalOrderId').textContent;
+
+            if (|| !platform || !orderId) {
+                alert('請輸入 Email、平台和訂單 ID！');
+                return;
+            }
+
+            const subscriptionData = {
+                discord_id: discord,
+                email: email,
+                platform: platform,
+                order_id: orderId
+            };
+
+            try {
+                const response = await fetch(`http://backend:8000/api/subscriptions`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(subscriptionData),
+                });
+
+                if (response.ok) {
+                    alert('訂閱成功！');
+                    closeModal();
+                } else {
+                    alert('訂閱失敗(可能已經訂閱)，請稍後重試');
+                }
+            } catch (error) {
+                console.error('提交訂閱失敗:', error);
+                alert('提交時發生錯誤(可能已經訂閱)，請稍後重試！');
+            }
+        }
+
+        // 打開取消訂閱模態框
+        function openCancelModal() {
+            const platform = document.getElementById('platform').value;
+            const orderId = document.getElementById('orderId').value;
+
+            if (!platform || !orderId) {
+                alert('請先查詢訂單！');
+                return;
+            }
+
+            document.getElementById('cancelModalPlatform').textContent = platform;
+            document.getElementById('cancelModalOrderId').textContent = orderId;
+
+            document.getElementById('cancelModal').style.display = 'flex';
+        }
+
+        // 提交取消訂閱
+        async function submitCancelSubscription() {
+            const email = document.getElementById('cancelEmail').value;
+            const discord = document.getElementById('cancelDiscord').value;
+            const platform = document.getElementById('cancelModalPlatform').textContent;
+            const orderId = document.getElementById('cancelModalOrderId').textContent;
+
+            if (!platform || !orderId) {
+                alert('請輸入 Email、平台和訂單 ID！');
+                return;
+            }
+
+            const cancelData = {
+                discord_id: discord,
+                email: email,
+                platform: platform,
+                order_id: orderId
+            };
+
+            try {
+                const response = await fetch(`http://backend:8000/api/subscriptions`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(cancelData),
+                });
+
+                if (response.ok) {
+                    alert('取消訂閱成功！');
+                    closeCancelModal();
+                } else {
+                    alert('取消訂閱失敗(可能還未訂閱)，請稍後重試');
+                }
+            } catch (error) {
+                console.error('取消訂閱失敗:', error);
+                alert('取消訂閱時發生錯誤(可能還未訂閱)，請稍後重試！');
+            }
+        }
+
+        // 關閉訂閱模態框
+        function closeModal() {
+            document.getElementById('subscriptionModal').style.display = 'none';
+        }
+
+        // 關閉取消訂閱模態框
+        function closeCancelModal() {
+            document.getElementById('cancelModal').style.display = 'none';
+        }
+    </script>
+</body>
+
+</html>
+
