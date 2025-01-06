@@ -22,7 +22,7 @@ services:
       - db
 
   db:
-    image: mysql:latest
+    image: mysql:8.0
     container_name: mysql-server
     volumes:
       - ./db:/docker-entrypoint-initdb.d
