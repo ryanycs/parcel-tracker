@@ -1,15 +1,20 @@
 import mysql.connector
 from mysql.connector import Error
+import os
+
+DATABASE_URL = os.getenv("DATABASE_URL")
+DATABASE_USER = os.getenv("DATABASE_USER")
+DATABASE_PASSWORD = os.getenv("DATABASE_PASSWORD")
+DATABASE_NAME = os.getenv("DATABASE_NAME")
 
 conn = None
 try:
     # Connect to the MySQL database
     conn = mysql.connector.connect(
-        #host="mysql_server",
-        host="127.0.0.1",
-        user="user",
-        password="passwd",
-        database="shopping"
+        host=DATABASE_URL,
+        user=DATABASE_USER,
+        password=DATABASE_PASSWORD,
+        database=DATABASE_NAME,
     )
 
     if conn.is_connected():
