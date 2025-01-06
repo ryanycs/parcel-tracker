@@ -76,6 +76,26 @@ async def subscription(sub: Subscription):
         if cursor.fetchone():
             raise HTTPException(status_code=409, detail="Subscription already exists")
 
+        # Track the parcel status
+        result = track(Platform(platform), order_id)
+        if result is None:
+            raise HTTPException(status_code=404, detail="Parcel not found")
+
+        # Check if the parcel status is already existed in the database
+        cursor.execute(
+            "SELECT * FROM Parcels WHERE platform_id = %s AND order_id = %s",
+            (platform_id, order_id),
+        )
+        if not cursor.fetchone():
+            # Insert the result into the database
+            cursor.execute(
+                """
+            INSERT INTO Parcels (platform_id, order_id, status, update_time) VALUES (%s, %s, %s, %s)
+            """,
+                (platform_id, order_id, result.status, result.time),
+            )
+
+        # Insert the subscription into the database
         cursor.execute(
             """
         INSERT INTO Subscriptions (order_id, email, discord_id, platform_id)
