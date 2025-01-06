@@ -1,5 +1,5 @@
 INSERT INTO Platforms (name)
-VALUES ('Seven Eleven'),
-    ('Family Mart'),
-    ('Ok Mart'),
-    ('Shopee');
+VALUES ('seven_eleven'),
+    ('family_mart'),
+    ('ok_mart'),
+    ('shopee');
