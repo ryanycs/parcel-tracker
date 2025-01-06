@@ -1,7 +1,11 @@
 import os
+from contextlib import asynccontextmanager
 from typing import Optional
 
+import requests
 import uvicorn
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.interval import IntervalTrigger
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from mysql.connector import Error, connect
@@ -13,16 +17,9 @@ MYSQL_USER = os.getenv("MYSQL_USER")
 MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD")
 MYSQL_DATABASE = os.getenv("MYSQL_DATABASE")
 
+DISCORD_WEBHOOK_URL = os.getenv("DISCORD_WEBHOOK_URL")
+
 PLATFORM_TO_ID = {"seven_eleven": 1, "family_mart": 2, "ok_mart": 3, "shopee": 4}
-
-app = FastAPI()
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["GET", "POST", "DELETE"],
-    allow_headers=["*"],
-)
 
 
 class Subscription(BaseModel):
@@ -32,6 +29,29 @@ class Subscription(BaseModel):
     platform: str
 
 
+# Schedule the background task
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    trigger = IntervalTrigger(seconds=15)
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(check_subscriptions, trigger)
+    scheduler.start()
+    yield
+    scheduler.shutdown()
+
+
+app = FastAPI(lifespan=lifespan)
+
+# Enable CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["GET", "POST", "DELETE"],
+    allow_headers=["*"],
+)
+
+
+# Define the API endpoints
 @app.get("/")
 async def root():
     return {"message": "It works!"}
@@ -155,6 +175,61 @@ async def unsubscription(sub: Subscription):
         raise HTTPException(
             status_code=500, detail=f"Failed to delete subscription: {str(e)}"
         )
+    finally:
+        if conn:
+            conn.close()
+
+
+def check_subscriptions():
+    # Connect to the database
+    try:
+        conn = connect_to_mysql()
+        cursor = conn.cursor()
+
+        # Get all subscriptions
+        cursor.execute(
+            """
+        SELECT S.order_id, S.email, S.discord_id, PL.name, P.status, P.update_time
+        FROM Subscriptions S
+        JOIN Parcels P ON S.order_id = P.order_id AND S.platform_id = P.platform_id
+        JOIN Platforms PL ON S.platform_id = PL.platform_id
+        """
+        )
+        subscriptions = cursor.fetchall()
+
+        for subscription in subscriptions:
+            order_id, email, discord_id, platform, status, update_time = subscription
+            result = track(Platform(platform), order_id)
+
+            if result is None or result.status == status:
+                continue
+
+            # Update the parcel status in the database
+            cursor.execute(
+                "UPDATE Parcels SET status = %s, update_time = %s WHERE order_id = %s AND platform_id = %s",
+                (result.status, result.time, order_id, PLATFORM_TO_ID[platform]),
+            )
+
+            # Send a notification to the user
+            if email:
+                # TODO: Send an email
+                pass
+            if discord_id:
+                # send to discord webhook
+                payload = {
+                    "user_id": discord_id,
+                    "platform": platform,
+                    "order_id": order_id,
+                    "status": result.status,
+                    "time": result.time,
+                }
+                requests.post(DISCORD_WEBHOOK_URL, json=payload)
+
+        conn.commit()
+    except Error as e:
+        if conn:
+            conn.rollback()
+        print(f"Failed to check subscriptions: {str(e)}")
     finally:
         if conn:
             conn.close()
