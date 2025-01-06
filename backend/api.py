@@ -7,10 +7,10 @@ from mysql.connector import Error, connect
 from parcel_tw import Platform, track
 from pydantic import BaseModel
 
-DATABASE_URL = os.getenv("DATABASE_URL")
-DATABASE_USER = os.getenv("DATABASE_USER")
-DATABASE_PASSWORD = os.getenv("DATABASE_PASSWORD")
-DATABASE_NAME = os.getenv("DATABASE_NAME")
+MYSQL_URL = os.getenv("MYSQL_URL")
+MYSQL_USER = os.getenv("MYSQL_USER")
+MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD")
+MYSQL_DATABASE = os.getenv("MYSQL_DATABASE")
 
 PLATFORM_TO_ID = {"seven_eleven": 1, "family_mart": 2, "ok_mart": 3, "shopee": 4}
 
@@ -159,10 +159,10 @@ def connect_to_mysql():
 
     try:
         conn = connect(
-            host=DATABASE_URL,
-            user=DATABASE_USER,
-            password=DATABASE_PASSWORD,
-            database=DATABASE_NAME,
+            host=MYSQL_URL,
+            user=MYSQL_USER,
+            password=MYSQL_PASSWORD,
+            database=MYSQL_DATABASE,
         )
         return conn
     except Error as e:
