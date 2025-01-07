@@ -117,7 +117,7 @@ sudo apt install docker-compose
 # 建立 docker container
 docker-compose up
 
-# Open browser  and run on localhost/your domain name
+# Open browser and run on localhost/your domain name
 http://hocalhost
 ```
 - 所有服務上線，可以看到 discord bot 也有上線
@@ -221,10 +221,10 @@ server {
 
 |       | 姓名     | 負責內容 | 
 | ----- | --------| -------- | 
-| 組長   | 蘇翊荃   | Discord 機器人，網頁後端(爬蟲、資料庫)、程式部署(Docker、Nginx Reverse Proxy、http certificate)、程式整合    |
-| 組員  | 陳品妤   |  網頁前端設計、前端整合 API、架 web server (含 Nginx Reverse Proxy) 在container上  |
+| 組長   | 蘇翊荃   | Discord 機器人，網頁後端(爬蟲、資料庫)、程式部署(Docker、Nginx Reverse Proxy、http certificate)、程式整合 |
+| 組員  | 陳品妤   |  網頁前端設計、前端整合 API、架 web server (含 Nginx Reverse Proxy) 在container上 |
 | 組員  | 陳嘉璐   |  SQL Server、API、架 mail server、做會議記錄、寫 Readme | 
-| 組員  | 楊昱淞   |  網頁前端設計、整合 API  |
+| 組員  | 楊昱淞   |  網頁前端設計、整合 API |
 | 組員  | 余政葳   |  報告  | 
  
 ## References
