@@ -36,6 +36,6 @@ PLATFORM_CHOICES = [
         "seven_eleven": "7-11",
         "family_mart": "全家",
         "ok_mart": "OK",
-        "shopee": "蝦皮",
+        "shopee": "蝦皮"
     }.items()
 ]
