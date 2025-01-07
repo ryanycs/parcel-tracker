@@ -50,7 +50,7 @@
 - `.bot.env`:
     - 機器人環境相關變數
 - `.backend.env`:
-    - 資料庫環境及Webhook相關變數
+    - 資料庫環境及 Webhook 相關變數
 - `/frontend`:前端服務
     - 提供網頁讓使用者查詢包裹狀態
     - index.html: 網頁的程式
@@ -75,17 +75,20 @@
 
 - 大部分的網站都有防止爬蟲機制，每個網站繞過驗證碼的方式也不盡相同，爬蟲花費了不少的時間。
 - 因為爬蟲與檢查包裹是否更新的邏輯是在後端中，因此 Discord 機器人沒辦法主動得知包裹狀態是否更新，後來解決方法是使用 Webhook 來讓機器人監聽一個連接埠，藉由接收後端傳送過來的通知來得知包裹更新狀態。
-- 在測試前端是否成功發送request給後端api時，發現無法發送request，查看錯誤訊息後發現是CORS(Cross-Origin Resource Sharing) error，原因是因為Web server 和 backend 的 port不同且container之間無法直接通訊，後來使用 fastapi.middleware.cors 這個module解決[詳見reference]。
-- (cont.)後來發現雖然網頁已經可以 fetch後端的 API(跑在不同 port 上)，但需要程式中寫死server 的真實 IP 與 port ，或是使用 reverse proxy，前者不利於讓其他使用者自行重建此服務，因此後來使用nginx將前端網頁與後端API的反向代理到 web server 的 port 上使它們變成同一來源，可以直接通訊。
+- 在測試前端是否成功發送 request 給後端 API 時，發現無法發送 request，查看錯誤訊息後發現是 CORS(Cross-Origin Resource Sharing) error，原因是因為 Web server 和 backend 的 port 不同且 container 之間無法直接通訊，後來使用 fastapi.middleware.cors 這個 module 解決[詳見reference]。
+- (cont.)後來發現雖然網頁已經可以 fetch 後端的 API(跑在不同 port 上)，但需要程式中寫死 server 的真實 IP 與 port ，或是使用 reverse proxy，前者不利於讓其他使用者自行重建此服務，因此後來使用 nginx 將前端網頁與後端 API 的反向代理到 web server 的 port 上使它們變成同一來源，可以直接通訊。
 
 
 ## Knowledge from Lecture
 
 <!-- What kind of knowledge did you use on this project? -->
-- Linux系統基本指令
+- Linux 系統基本指令
+- Web development
+- SQL
 - WebServer
 - Nginx reverse proxy
 - MailServer
+- Containerization
 
 
 ## Installation
@@ -100,7 +103,7 @@
         -  到 Menu -> `OAuth2` -> OAuth2 URL Generator -> `bot` -> Bot Permissions -> `Adminstrator` -> 複製 url -> 貼到 browser 貼上 -> 選伺服器... -> 確認
         - 到 Menu ->`bot` -> Privileged Gateway Intents -> 三個選項都勾 -> save changes
     - 複製 `DISCORD_TOKEN` : Menu -> `bot` -> Token -> `Reset token` -> `COPY`
-    
+
 ### Linux
 - clone :
 ```
@@ -109,7 +112,7 @@ cd parcel-tracker
 ```
 - 將剛才取得 `DISCORD_TOKEN` 填入 `.bot.env` 中的`DISCORD_BOT_TOKEN=`
 - 啟動 docker :
-```      
+```
 # 若尚未安裝 docker 環境，請先
 sudo snap install docker
 sudo apt install docker-compose
@@ -187,14 +190,14 @@ server {
     - 查詢包裹： 使用者選擇物流平台並輸入訂單 ID，然後點擊「查詢包裹」按鈕。若查詢成功，包裹狀態和時間將顯示在頁面上。
         <p align="center"><img src="img/track05.png" width="30%"></p> 
 
-            
+
     - 訂閱包裹更新：在查詢包裹後，使用者可以選擇訂閱包裹更新通知。點擊「訂閱包裹更新」按鈕，填寫電子郵件和 Discord 帳號後，點擊「提交訂閱」以完成訂閱。
         - POST : `/api/subscriptions`
          <p align="center"><img src="img/track06.png" width="30%">
             <img src="img/track07.png" width="30%"></p>
-        
+
         - 若已訂閱會顯示錯誤
-       
+
         <p align="center"><img src="img/track08.png" width="30%"></p> 
 
 
@@ -208,7 +211,7 @@ server {
         - 如果查完資料庫找不到discord id，發現還未訂閱會顯示錯誤訊息
          <p align="center"><img src="img/track11.png" width="30%"></p> 
 
-            
+
 ## Future work
 - 新增 mail 功能 (目前後端還沒有寄送 mail 的 feature)
 - 定期刪除資料庫中已過期的包裹紀錄
@@ -226,7 +229,7 @@ server {
 | 組員  | 陳嘉璐   |  SQL Server、API、架 mail server、做會議記錄、寫 Readme | 
 | 組員  | 楊昱淞   |  網頁前端設計、整合 API |
 | 組員  | 余政葳   |  報告  | 
- 
+
 ## References
 - [Postman Learning Center](https://learning.postman.com/docs/getting-started/overview/)
 - [FastAPI](https://fastapi.tiangolo.com/)
