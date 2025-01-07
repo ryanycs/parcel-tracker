@@ -8,7 +8,6 @@ class Platform(Enum):
     FAMILY_MART = "family_mart"
     OK_MART = "ok_mart"
     SHOPEE = "shopee"
-    LSA = "lsa"
 
 
 PLATFORM_TO_ENUM = {
@@ -29,7 +28,6 @@ PLATFORM_TO_ENUM = {
     "ok_mart": Platform.OK_MART,
     "蝦皮": Platform.SHOPEE,
     "shopee": Platform.SHOPEE,
-    "lsa": Platform.LSA,
 }
 
 PLATFORM_CHOICES = [
@@ -39,6 +37,5 @@ PLATFORM_CHOICES = [
         "family_mart": "全家",
         "ok_mart": "OK",
         "shopee": "蝦皮",
-        "lsa": "LSA",
     }.items()
 ]

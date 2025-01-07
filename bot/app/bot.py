@@ -25,7 +25,7 @@ class Bot(commands.Bot):
         await self.add_cog(Parcel(self))
 
         # Sync application(slash) commands
-        # await self.tree.sync()
+        await self.tree.sync()
 
         print(f'Logged in as {self.user} ({self.user.id})')
 
