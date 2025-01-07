@@ -117,11 +117,11 @@ class Parcel(commands.Cog):
         # Convert platform to enum value
         platform = PLATFORM_TO_ENUM[platform].value
 
-        user_id = ctx.author.id
+        user_id = str(ctx.author.id)
         payload = {
             "discord_id": user_id,
             "platform": platform,
-            "order_id": order_id,
+            "order_id": order_id
         }
 
         async with aiohttp.request(
