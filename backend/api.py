@@ -32,7 +32,7 @@ class Subscription(BaseModel):
 # Schedule the background task
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    trigger = IntervalTrigger(seconds=15)
+    trigger = IntervalTrigger(minutes=10)
     scheduler = BackgroundScheduler()
     scheduler.add_job(check_subscriptions, trigger)
     scheduler.start()
