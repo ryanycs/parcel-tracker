@@ -3,12 +3,12 @@
 
 <!-- Why does your team want to build this idea/project?  -->
 
-台灣有非常多的物流平台，而蝦皮等電商平台在商品送到後並不會立即通知我們去取貨，有時甚至會延遲半天之久。所以我們設計了一個 Discord Bot，透過 Discord 指令來查詢不同物流的包裹進度，而且還不用輸入那些麻煩的驗證碼。同時我們還設計一個訂單查詢平台，結合到包裹追蹤的 discord 機器人，讓兩邊都能同步使用服務。
+台灣有非常多的物流平台，而蝦皮等電商平台在商品送到後並不會立即通知我們去取貨，有時甚至會延遲半天之久。所以我們設計了一個 Discord Bot，透過 Discord 指令來查詢不同物流的包裹進度，而且還不用輸入那些麻煩的驗證碼。同時我們還設計一個訂單查詢平台，結合到包裹追蹤的 Discord 機器人，讓兩邊都能同步使用服務。
 
-<p align="center"><img src="img/architecture.png" width="80%"></p>  
+<p align="center"><img src="img/architecture.png" width="80%"></p>
 
-- 查詢不同物流公司的包裹進度，例如 7-11、全家、蝦皮、FamilyMart
-- 架設一個包裹追蹤的 discord 機器人和訂單查詢平台
+- 查詢不同物流公司的包裹進度，例如 7-11、全家、蝦皮、OK Mart
+- 架設一個包裹追蹤的 Discord 機器人和訂單查詢平台
 
 ## Implementation Resources
 
@@ -33,7 +33,7 @@
 - `mysql.connector`: 建立與 MySQL 資料庫的連線
 
 ### Discord 機器人:
-- `discord.py`: discord bot framework
+- `discord.py`: Discord bot framework
 - `threading`: 為了讓 Discord bot 有 Webhook 功能(用來接收 Backend API 所傳送包裹更新的通知)，所以使用 threading 來執行一個 FastAPI 後端監聽在 3000 port。
 
 ### Deployment
@@ -75,7 +75,7 @@
 
 - 大部分的網站都有防止爬蟲機制，每個網站繞過驗證碼的方式也不盡相同，爬蟲花費了不少的時間。
 - 因為爬蟲與檢查包裹是否更新的邏輯是在後端中，因此 Discord 機器人沒辦法主動得知包裹狀態是否更新，後來解決方法是使用 Webhook 來讓機器人監聽一個連接埠，藉由接收後端傳送過來的通知來得知包裹更新狀態。
-- 在測試前端是否成功發送 request 給後端 API 時，發現無法發送 request，查看錯誤訊息後發現是 CORS(Cross-Origin Resource Sharing) error，原因是因為 Web server 和 backend 的 port 不同且 container 之間無法直接通訊，後來使用 fastapi.middleware.cors 這個 module 解決[詳見reference]。
+- 在測試前端是否成功發送 request 給後端 API 時，發現無法發送 request，查看錯誤訊息後發現是 CORS(Cross-Origin Resource Sharing) error，原因是因為 Web server 和 backend 的 port 不同且 Container 之間無法直接通訊，後來使用 fastapi.middleware.cors 這個 module 解決[詳見reference]。
 - (cont.)後來發現雖然網頁已經可以 fetch 後端的 API(跑在不同 port 上)，但需要程式中寫死 server 的真實 IP 與 port ，或是使用 reverse proxy，前者不利於讓其他使用者自行重建此服務，因此後來使用 nginx 將前端網頁與後端 API 的反向代理到 web server 的 port 上使它們變成同一來源，可以直接通訊。
 
 
@@ -85,9 +85,10 @@
 - Linux 系統基本指令
 - Web development
 - SQL
+- Web Crawler
 - WebServer
-- Nginx reverse proxy
-- MailServer
+- Nginx Reverse Proxy
+- Mail Server
 - Containerization
 
 
@@ -95,8 +96,8 @@
 
 <!-- How do the user install with your project? -->
 
-- 建立屬於自己的包裹追蹤的 discord 機器人
-    - 詳細 discord bot 設置可參閱 [How to Make a Discord Bot in the Developer Portal](https://realpython.com/how-to-make-a-discord-bot-python/#how-to-make-a-discord-bot-in-the-developer-portal)
+- 建立屬於自己的包裹追蹤的 Discord 機器人
+    - 詳細 Discord bot 設置可參閱 [How to Make a Discord Bot in the Developer Portal](https://realpython.com/how-to-make-a-discord-bot-python/#how-to-make-a-discord-bot-in-the-developer-portal)
     - 簡易教學:
         - 到 https://discord.com/developers/applications
         - `New Application` -> 取名字
@@ -111,19 +112,19 @@ git clone git@github.com:ryanycs/parcel-tracker.git
 cd parcel-tracker
 ```
 - 將剛才取得 `DISCORD_TOKEN` 填入 `.bot.env` 中的`DISCORD_BOT_TOKEN=`
-- 啟動 docker :
+- 啟動 Docker :
 ```
-# 若尚未安裝 docker 環境，請先
+# 若尚未安裝 Docker 環境，請先
 sudo snap install docker
 sudo apt install docker-compose
 
-# 建立 docker container
+# 建立 Docker Container
 docker-compose up
 
 # Open browser and run on localhost/your domain name
 http://hocalhost
 ```
-- 所有服務上線，可以看到 discord bot 也有上線
+- 所有服務上線，可以看到 Discord bot 也有上線
 
 
 ### Reverse Proxy & SSL Certificate
@@ -159,7 +160,7 @@ server {
 ## Usage
 
 <!-- How to use your project -->
-- container 建立完成後，即可使用 包裹追蹤 discord 機器人、訂單查詢平台
+- Container 建立完成後，即可使用 包裹追蹤 Discord 機器人、訂單查詢平台
 - **物流平台** 查詢僅允許以下輸入值:
 
 | SEVEN_ELEVEN  |  FAMILY_MART   |  OK_MART   | SHOPEE |
@@ -217,7 +218,7 @@ server {
 - 定期刪除資料庫中已過期的包裹紀錄
 
 ## 影片
-- [架構說明](https://www.youtube.com/watch?v=mm-l2DhpoKc)
+- [架構說明](https://www.youtube.com/watch?v=xfBNhRqVMAI)
 - [Demo](https://www.youtube.com/watch?v=jFkgU9TW5Ak)
 
 ## Job Assignment
@@ -225,7 +226,7 @@ server {
 |       | 姓名     | 負責內容 | 
 | ----- | --------| -------- | 
 | 組長   | 蘇翊荃   | Discord 機器人，網頁後端(爬蟲、資料庫)、程式部署(Docker、Nginx Reverse Proxy、http certificate)、程式整合 |
-| 組員  | 陳品妤   |  網頁前端設計、前端整合 API、架 web server (含 Nginx Reverse Proxy) 在container上 |
+| 組員  | 陳品妤   |  網頁前端設計、前端整合 API、架 web server (含 Nginx Reverse Proxy) 在 Container 上 |
 | 組員  | 陳嘉璐   |  SQL Server、API、架 mail server、做會議記錄、寫 Readme | 
 | 組員  | 楊昱淞   |  網頁前端設計、整合 API |
 | 組員  | 余政葳   |  報告  | 
