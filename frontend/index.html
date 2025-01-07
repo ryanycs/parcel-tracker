@@ -261,22 +261,21 @@
                 alert('請輸入平台和訂單 ID！');
                 return;
             }
+	    try {
+                const response = await fetch(`/api/api/track/${platform}/${orderId}`);		
+		const data = await response.json();
 
-            try {
-                const response = await fetch(`http://backend:8000/api/track/${platform}/${orderId}`);
-                const data = await response.json();
-
-                if (response.ok) {
-                    document.getElementById('status').textContent = `狀態: ${data.status}`;
-                    document.getElementById('time').textContent = `時間: ${data.time}`;
-                    document.getElementById('packageInfo').style.display = 'block';
-                } else {
-                    alert('未找到包裹');
-                    document.getElementById('packageInfo').style.display = 'none';
-                }
-            } catch (error) {
-                console.error('查詢包裹失敗:', error);
-                alert('查詢時發生錯誤，請稍後重試！');
+		if (response.ok) {
+		    document.getElementById('status').textContent = `狀態: ${data.status}`;
+		    document.getElementById('time').textContent = `時間: ${data.time}`;
+		    document.getElementById('packageInfo').style.display = 'block';
+		} else {
+		    alert('未找到包裹');
+		    document.getElementById('packageInfo').style.display = 'none';
+		}
+	    } catch (error) {
+		console.error('查詢包裹失敗:', error);
+		alert('查詢時發生錯誤，請稍後重試！');
             }
         }
 
@@ -303,7 +302,7 @@
             const platform = document.getElementById('modalPlatform').textContent;
             const orderId = document.getElementById('modalOrderId').textContent;
 
-            if (|| !platform || !orderId) {
+            if ( !platform || !orderId) {
                 alert('請輸入 Email、平台和訂單 ID！');
                 return;
             }
@@ -316,7 +315,7 @@
             };
 
             try {
-                const response = await fetch(`http://backend:8000/api/subscriptions`, {
+                const response = await fetch(`http://10.22.22.229:8000/api/subscriptions`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -372,7 +371,7 @@
             };
 
             try {
-                const response = await fetch(`http://backend:8000/api/subscriptions`, {
+                const response = await fetch(`http://10.22.22.229:8000/api/subscriptions`, {
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json',
