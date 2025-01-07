@@ -1,13 +1,11 @@
-# Parcel Tracker
-
+# Parcel-Track 機器人
 ## Concept Development
+
 <!-- Why does your team want to build this idea/project?  -->
 
-台灣有非常多的物流平台，而蝦皮等電商平台在商品送到後並不會立即通知我們去取貨，有時甚至會延遲半天之久。所以我們設計了一個 Discord Bot，透過Discord 指令來查詢不同物流的包裹進度，而且還不用輸入那些麻煩的驗證碼。同時我們還設計一個訂單查詢平台，結合到包裹追蹤的 discord 機器人，讓兩邊都能同步使用服務。
+台灣有非常多的物流平台，而蝦皮等電商平台在商品送到後並不會立即通知我們去取貨，有時甚至會延遲半天之久。所以我們設計了一個 Discord Bot，透過 Discord 指令來查詢不同物流的包裹進度，而且還不用輸入那些麻煩的驗證碼。同時我們還設計一個訂單查詢平台，結合到包裹追蹤的 discord 機器人，讓兩邊都能同步使用服務。
 
-<p align="center">
-    <img src="img/architecture.png" width="100">
-</p>
+<p align="center"><img src="img/architecture.png" width="50%"></p>  
 
 - 查詢不同物流公司的包裹進度，例如 7-11、全家、蝦皮、FamilyMart
 - 架設一個包裹追蹤的 discord 機器人和訂單查詢平台
@@ -15,6 +13,7 @@
 ## Implementation Resources
 
 <!-- e.g., How many Raspberry Pi? How much you spent on these resources? -->
+- computer 
 
 ## Existing Library/Software
 
@@ -30,17 +29,17 @@
 - style 
     - 其中包含了頁面的內聯 CSS 樣式，控製頁面的布局和設計。 -->
 ### Backend:
-- fastapi
+- Fastapi
     - 負責後端 API 開發，處理邏輯和資料
-- uvicorn
+- Uvicorn
     - ASGI 伺服器，用於執行 FastAPI 
-- requests
+- Requests
 	- 對目標網頁發送 http requests
-- beautifulsoup4
+- Beautifulsoup4
 	- 解析爬到的 HTML
-- pillow
+- Pillow
 	- 處理 captcha 圖片
-- pytesseract
+- Pytesseract
 	- OCR 光學影像辨識
 
     
@@ -54,10 +53,11 @@
 - threading
 	- 為了讓 Discord bot 有 Webhook 功能(用來接收 Backend API 所傳送包裹更新的通知)，所以使用 threading 來執行一個 FastAPI 後端監聽在 3000 port。
 
-
+<!--
 ### Nginx reverse proxy
 - Nginx
 - certbot
+-->
 
 ## Implementation Process
 
@@ -89,6 +89,7 @@
 
 - 大部分的網站都有防止爬蟲機制，每個網站繞過驗證碼的方式也不盡相同，爬蟲花費了不少的時間。
 - 因為爬蟲與檢查包裹是否更新的邏輯是在後端中，因此 Discord 機器人沒辦法主動得知包裹狀態是否更新，後來解決方法是使用 Webhook 來讓機器人監聽一個連接埠，藉由接收後端傳送過來的通知來得知包裹更新狀態。
+- 在測試前端是否成功發送request給後端api時查看錯誤發現是CORS(Cross-Origin Resource Sharing) error的，原因是因為docker和網域不同，後來使用fastapi.middleware.cors這個module解決
 
 ## Knowledge from Lecture
 
@@ -128,10 +129,8 @@ sudo apt install docker-compose
 # 建立 docker container
 docker-compose up
 
-# run on domain name/your server's ip:8080
-http://<server's ip>:8080
-http://<domain name>
-
+# Open browser  and run on localhost/your domain name
+http://hocalhost
 ```
 - 所有服務上線，可以看到 discord bot 也有上線
     
@@ -152,61 +151,62 @@ http://<domain name>
 
 - Discord bot
 	- `/track [物流平台] [訂單編號]`: 查詢包裹進度
-    <p align="center">
-        <img src="img/track01.png" width="100">
-        <img src="img/track02.png" width="100">
-    </p>
-	- `/subscribe [物流平台] [訂單編號]`: 訂閱包裹進度，如果包裹狀態有更新會傳送訊息通知使用者
-    <p align="center">
-        <img src="img/track03.png" width="100">
-    </p>
+        <p align="center"><img src="img/track01.png" width="50%"></p>  
+        <p align="center"><img src="img/track02.png" width="50%"></p>  
+
+	- `/subscribe [物流平台] [訂單編號]`: 訂閱包裹進度，如果包裹狀態有更新會傳送訊息通知使用者 
+        <p align="center"><img src="img/track04.png" width="50%"></p> 
+
 	- `/unsubscribe [物流平台] [訂單編號]`: 取消訂閱過已經訂閱的包裹進度
 
+
+
 - 訂單查詢平台:
-<p align="center">
-    <img src="img/track04.png" width="100">
-</p>
+- <p align="center"><img src="img/track12.png" width="50%"></p>
+
+
     - 查詢包裹： 使用者選擇物流平台並輸入訂單 ID，然後點擊「查詢包裹」按鈕。若查詢成功，包裹狀態和時間將顯示在頁面上。
-        - GET :`/api/track/{platform}/{orderId}`
-         <p align="center">
-             <img src="img/track05.png" width="100">
-         </p>
+        <p align="center"><img src="img/track05.png" width="50%"></p> 
+
             
     - 訂閱包裹更新：在查詢包裹後，使用者可以選擇訂閱包裹更新通知。點擊「訂閱包裹更新」按鈕，填寫電子郵件和 Discord 帳號後，點擊「提交訂閱」以完成訂閱。
         - POST : `/api/subscriptions`
-       
-         <p align="center">
-             <img src="img/track06.png" width="100">
-             <img src="img/track07.png" width="100">
-         </p>
-      
+         <p align="center"><img src="img/track06.png" width="50%"></p>
+         
+        
+        <p align="center"><img src="img/track07.png" width="50%"></p>
+        
         - 若已訂閱會顯示錯誤
-         <p align="center">
-             <img src="img/track08.png" width="100">
-         </p>
+       
+        <p align="center"><img src="img/track08.png" width="50%"></p> 
+
+
+
     - 取消訂閱包裹更新：若使用者希望停止接收包裹更新，可以選擇取消訂閱。點擊「取消訂閱包裹更新」按鈕，填寫電子郵件和 Discord 帳號後，點擊「提交取消訂閱」。
         - DELETE : `/api/subscriptions`
-         <p align="center">
-             <img src="img/track09.png" width="100">
-             <img src="img/track10.png" width="100">
-         </p>
+         <p align="center"><img src="img/track09.png" width="50%"></p> 
+         <p align="center"><img src="img/track10.png" width="50%"></p> 
+
+
         - 如果查完資料庫找不到discord id，發現還未訂閱會顯示錯誤訊息
-         <p align="center">
-             <img src="img/track11.png" width="100">
-         </p>
+         <p align="center"><img src="img/track11.png" width="50%"></p> 
+
             
 ## Future work
 - mail 功能將於 2.0 版上線 
 
-## Job Assignment
+## 影片
+- [架構說明](https://www.youtube.com/watch?v=mm-l2DhpoKc)
+- [Demo](https://www.youtube.com/watch?v=jFkgU9TW5Ak)
 
+## Job Assignment
 
 |       | 姓名     | 負責內容 | 
 | ----- | --------| -------- | 
-| 組長   | 蘇翊荃   | Discord 包裹機器人(爬蟲、資料庫、bot)、程式部署(Docker、Nginx Reverse Proxy)、程式整合    |
-| 組員  | 陳品妤   |  前端網頁設計整合   |
-| 組員  | 陳嘉璐   |  資料庫、做會議記錄、寫 Readme | 
-| 組員  | 楊昱淞   |   前端網頁設計  |
+| 組長   | 蘇翊荃   | Discord 機器人，網頁後端(爬蟲、資料庫、bot)、程式部署(Docker、Nginx Reverse Proxy)、程式整合    |
+| 組員  | 陳品妤   |  網頁前端設計、整合api、架web server 在container上  |
+| 組員  | 陳嘉璐   |  SQL Server、架 mail server、做會議記錄、寫 Readme | 
+| 組員  | 楊昱淞   |   前端網頁設計、整合api  |
 | 組員  | 余政葳   |  報告  | 
 
 ## References
@@ -215,4 +215,3 @@ http://<domain name>
 - [CORS (Cross-Origin Resource Sharing) - FastAPI](https://fastapi.tiangolo.com/tutorial/cors/#use-corsmiddleware)
 - [Get Docker](https://docs.docker.com/get-started/get-docker/)
 - [Docker | 建立 PostgreSQL 的 container 時，同時完成資料庫的初始化](https://eandev.com/post/container/docker-postgresql-initialization-scripts/)
-## Demo 實作影片
